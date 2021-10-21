@@ -1,0 +1,227 @@
+<!--球场预定 - 预定成功邮件通知-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f6f6f7;
+        }
+
+        .view-container {
+            width: 786px;
+            padding: 42px 0;
+            margin: 0 auto;
+        }
+
+        .header {
+            border-radius: 4px 4px 0 0;
+            background-color: white;
+        }
+
+        .header .box-wrap {
+            display: flex;
+            align-items: center;
+            padding: 40px 13px 24px;
+            border-bottom: 1px solid #DFDFE2;
+        }
+
+        .header .left-box {
+            flex: 1;
+            display: flex;
+        }
+
+        .header .right-box {
+            color: #737380;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 22px;
+        }
+
+        .header img {
+            height: 22px;
+        }
+
+        .content {
+            position: relative;
+            min-height: 300px;
+            margin-bottom: 16px;
+            padding: 32px 64px 48px;
+            border-radius: 0 0 4px 4px;
+            background-color: white;
+        }
+
+        .content .title {
+            color: #484859;
+            font-size: 24px;
+            line-height: 28px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .content .info-box p span:first-child {
+            color: rgba(40, 40, 60, 0.5);
+        }
+
+        .bottom-tips {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 16px;
+            color: #484859;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 24px;
+            text-align: center;
+        }
+
+        .info-box {
+            margin-bottom: 16px;
+        }
+
+        .info-box p:first-child {
+            color: #484859;
+            font-size: 20px;
+            font-weight: 500;
+            line-height: 28px;
+            margin-bottom: 4px;
+        }
+
+        .info-box p:nth-child(2) {
+            color: #484859;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 24px;
+        }
+
+        .info-box .btn-group {
+            margin-top: 24px;;
+        }
+
+        .info-box button {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 22px;
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: #4A57FF;
+            cursor: pointer;
+        }
+
+        .info-box button:last-child {
+            color: #737380;
+            margin-left: 8px;
+            background-color: white;
+        }
+
+        .concat-box {
+            width: 640px;
+            text-align: center;
+            margin: 0 auto;
+        }
+
+        .concat-box p {
+            color: #D98021;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 22px;
+        }
+
+        .concat-box img {
+            margin-top: 16px;
+            margin-bottom: 509px;
+            /* 用于撑开离底部的距离 */
+        }
+
+        .has_border {
+            border: 1px solid #DFDFE2;
+            padding: 16px;
+        }
+
+        .inscribe {
+            text-align: right;
+            padding: 16px;
+        }
+
+        .column {
+            float: left;
+            width: 50%;
+            font-size: 14px;
+        }
+
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .indent {
+            text-indent: 24px;
+        }
+
+        .footer {
+            color: #737380;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 24px;
+            text-align: center;
+        }
+
+        .red {
+            color: red;
+        }
+
+
+        .icon_size {
+            width: 13px;
+            height: 13px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="view-container">
+    <div class="header">
+        <div class="box-wrap">
+            <div class="left-box">
+                <img src="{{ payload.inbound.email_logo }}"
+                    alt="">
+            </div>
+            <div class="right-box">
+                <span>{{ payload.inbound.email_slogan }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <h3 class="title">
+            通知
+        </h3>
+        <div class="info-box">
+            <p class="">
+                <span>
+                    {{ payload.inbound.hr_name }}给您推荐了{{ payload.inbound.resume_count }}场地，请尽快处理<a href="{{ payload.inbound.email_url }}">点此处理</a>
+                </span>
+            </p>
+            <br>
+        </div>
+        <br>
+        <div class="bottom-tips">本邮件由系统代发，无需回复</div>
+    </div>
+    <br>
+    <br>
+    <div class="footer">
+        <p>{{ payload.inbound.email_company }}</p>
+    </div>
+</div>
+</body>
+</html>
