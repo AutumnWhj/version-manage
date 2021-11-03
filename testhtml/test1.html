@@ -1,226 +1,203 @@
-<!--球场预定 - 预定成功邮件通知-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Document</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Bello 智慧招聘</title>
     <style>
         * {
+            outline: 0;
             margin: 0;
             padding: 0;
+            vertical-align: baseline;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        body {
-            background-color: #f6f6f7;
+        .email-page {
+            color: rgba(40, 40, 60, 1);
+            line-height: 1.4;
+            font-weight: 400;
+            background-color: rgba(244, 244, 244, 1);
+            font-family: 'PingFang SC', 'Microsoft YaHei', 微软雅黑, 'Helvetica Neue', Helvetica, Arial, sans-serif;
         }
 
-        .view-container {
-            width: 786px;
-            padding: 42px 0;
+        .container {
+            width: 600px;
+            font-size: 0;
             margin: 0 auto;
         }
 
-        .header {
-            border-radius: 4px 4px 0 0;
-            background-color: white;
+        .row-vertical-line span::after {
+            content: "|";
+            padding: 0 0 0 4px;
+            color: rgba(40, 40, 60, 0.25);
         }
 
-        .header .box-wrap {
-            display: flex;
-            align-items: center;
-            padding: 40px 13px 24px;
-            border-bottom: 1px solid #DFDFE2;
+        .row-vertical-line span:last-child::after {
+            content: normal;
         }
 
-        .header .left-box {
-            flex: 1;
-            display: flex;
-        }
-
-        .header .right-box {
-            color: #737380;
-            font-size: 14px;
-            font-weight: 400;
-            line-height: 22px;
-        }
-
-        .header img {
-            height: 22px;
-        }
-
-        .content {
-            position: relative;
-            min-height: 300px;
-            margin-bottom: 16px;
-            padding: 32px 64px 48px;
-            border-radius: 0 0 4px 4px;
-            background-color: white;
-        }
-
-        .content .title {
-            color: #484859;
-            font-size: 24px;
-            line-height: 28px;
+        .email-header {
+            font-size: 0;
+            padding: 24px 0;
             text-align: center;
-            margin-bottom: 40px;
+            margin: 0 auto;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
 
-        .content .info-box p span:first-child {
+        .email-header p {
             color: rgba(40, 40, 60, 0.5);
+            font-size: 12px;
+            margin-top: 10px;
         }
 
-        .bottom-tips {
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 16px;
-            color: #484859;
+        .email-title {
             font-size: 14px;
-            font-weight: 400;
-            line-height: 24px;
-            text-align: center;
+            margin-top: 24px;
         }
 
-        .info-box {
-            margin-bottom: 16px;
-        }
-
-        .info-box p:first-child {
-            color: #484859;
-            font-size: 20px;
-            font-weight: 500;
-            line-height: 28px;
+        .email-title p:first-child {
             margin-bottom: 4px;
         }
 
-        .info-box p:nth-child(2) {
-            color: #484859;
-            font-size: 16px;
-            font-weight: 400;
-            line-height: 24px;
-        }
-
-        .info-box .btn-group {
-            margin-top: 24px;;
-        }
-
-        .info-box button {
-            color: white;
-            font-size: 14px;
-            font-weight: 500;
-            line-height: 22px;
-            padding: 8px 16px;
+        .email-content {
+            font-size: 12px;
+            margin-top: 24px;
+            margin-bottom: 0;
+            padding: 16px 24px 44px;
             border-radius: 4px;
-            border: 1px solid #ddd;
-            background-color: #4A57FF;
-            cursor: pointer;
+            background-color: #fff;
         }
 
-        .info-box button:last-child {
-            color: #737380;
-            margin-left: 8px;
-            background-color: white;
-        }
-
-        .concat-box {
-            width: 640px;
+        .email-content .candidate-info {
+            font-size: 12px;
             text-align: center;
-            margin: 0 auto;
         }
 
-        .concat-box p {
-            color: #D98021;
+        .email-content .candidate-info p:first-child {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .email-content .job-info {
             font-size: 14px;
-            font-weight: 400;
-            line-height: 22px;
+            margin-top: 24px;
         }
 
-        .concat-box img {
+        .email-content .job-info p {
+            margin-bottom: 8px;
+        }
+
+        .email-content .job-info p:last-child {
+            margin-bottom: 0;
+        }
+
+        .email-content .job-info p span:first-child {
+            color: rgba(40, 40, 60, 0.5);
+        }
+
+        .email-content .info-tips {
+            text-align: center;
             margin-top: 16px;
-            margin-bottom: 509px;
-            /* 用于撑开离底部的距离 */
         }
 
-        .has_border {
-            border: 1px solid #DFDFE2;
-            padding: 16px;
-        }
-
-        .inscribe {
-            text-align: right;
-            padding: 16px;
-        }
-
-        .column {
-            float: left;
-            width: 50%;
+        .email-content .info-tips h3 {
             font-size: 14px;
         }
 
-        .row:after {
-            content: "";
-            display: table;
-            clear: both;
+        .email-content .info-tips p {
+            width: 330px;
+            color: #E00000;
+            line-height: 20px;
+            margin: 0 auto;
+            margin-top: 16px;
         }
 
-        .indent {
-            text-indent: 24px;
+        .email-content .qrcode-wrap {
+            text-align: center;
+            margin-top: 16px;
         }
 
-        .footer {
-            color: #737380;
-            font-size: 14px;
-            font-weight: 400;
-            line-height: 24px;
+        .email-content .qrcode-wrap img {
+            width: 128px;
+            height: 128px;;
+        }
+
+        .email-footer {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .email-footer .text-help {
+            color: rgba(40, 40, 60, 0.5);
+            font-size: 12px;
             text-align: center;
         }
 
-        .red {
-            color: red;
+        .email-footer .text-help p:first-child {
+            margin-bottom: 16px;
         }
 
-
-        .icon_size {
-            width: 13px;
-            height: 13px;
+        .email-footer .text-tips {
+            color: rgba(40, 40, 60, 0.5);
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 24px;
         }
 
+        .email-footer .copyright-wrap {
+            color: rgba(40, 40, 60, 0.25);
+            font-size: 12px;
+            margin-top: 24px;
+            padding: 16px 0 24px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .email-footer .copyright-wrap p:first-child {
+            margin-bottom: 2px;
+        }
     </style>
 </head>
 <body>
-<div class="view-container">
-    <div class="header">
-        <div class="box-wrap">
-            <div class="left-box">
-                <img src="{{ payload.inbound.email_logo }}"
-                    alt="">
-            </div>
-            <div class="right-box">
-                <span>{{ payload.inbound.email_slogan }}</span>
-            </div>
-        </div>
+<div class="email-page">
+    <div class="email-header container">
+        <img src="data:image/png;base64,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">
+        <p>用 AI 重新定义招聘</p>
     </div>
-    <div class="content">
-        <h3 class="title">
-            通知
-        </h3>
-        <div class="info-box">
+    <div class="email-content container">
+        <div class="candidate-info">
+            <p>简历推荐通知</p>
+        </div>
+        <div class="job-info">
             <p class="">
-                <span>
-                    {{ payload.inbound.hr_name }}给您推荐了{{ payload.inbound.resume_count }}场地，请尽快处理<a href="{{ payload.inbound.email_url }}">点此处理</a>
-                </span>
+                    <span>
+                        猎头{{ payload.inbound.recommender_name }}通过小倍优选给您推荐了{{ payload.inbound.resume_count }}份简历，请尽快处理<a href="{{ payload.inbound.email_url }}">点此处理</a>
+                    </span>
             </p>
             <br>
+            <p>
+                <span>推荐理由：{{ payload.inbound.content }}</span>
+            </p>
+            <p>
+                <span>其他信息：</span>
+            </p>
+            <p>
+                <span>职位：</span>
+                <span>{{ payload.inbound.job_name }}</span>
+            </p>
         </div>
         <br>
-        <div class="bottom-tips">本邮件由系统代发，无需回复</div>
+        <br>
     </div>
-    <br>
-    <br>
-    <div class="footer">
-        <p>{{ payload.inbound.email_company }}</p>
+    <div class="email-footer container">
+        <div class="text-tips">本邮件由系统代发，无需回复。</div>
+        <div class="copyright-wrap">
+            <p>&copy深圳呗佬智能有限公司</p>
+            <p>深圳南山区中国华润大厦L201</p>
+        </div>
     </div>
 </div>
 </body>

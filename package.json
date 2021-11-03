@@ -1,7 +1,6 @@
 {
   "name": "html2email",
   "version": "1.0.0",
-  "license": "MIT",
   "bin": {
     "html2email": "bin/index.js"
   },
@@ -20,13 +19,18 @@
   "dependencies": {
     "@rollup/plugin-json": "^4.1.0",
     "cac": "^6.7.11",
+    "extract-inline-css": "^1.0.1",
     "fast-glob": "^3.2.7",
     "fs-extra": "^10.0.0",
+    "html-entities": "^2.3.2",
     "inline-css": "^3.0.0",
     "joycon": "^3.0.1",
+    "postcss": "^8.3.11",
     "tslib": "^2.3.1"
   },
   "html2email": {
-    "exclude": ["node_modules"]
+    "exclude": [
+      "node_modules"
+    ]
   }
 }

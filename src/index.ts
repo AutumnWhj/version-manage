@@ -1,4 +1,6 @@
-import genHtmlEmail from './genHtmlEmail'
+
+import genHtml2InlineCSS from './genHtml2InlineCss'
+import genHtmlExtractCss from './genHtmlExtractCss'
 import cac from 'cac'
 const cli = cac()
 
@@ -24,7 +26,6 @@ async function getConfig(
     'package.json',
     'html2email.json'
   ])
-  console.log('path, data', path, data)
   const config: PartialCliOptions = {
     title: 'template',
     include: '**/*.html',
@@ -47,13 +48,20 @@ cli
   .allowUnknownOptions()
   .action(async (flags: Partial<CliOptions>) => {
     const config = await getConfig(flags)
-    genHtmlEmail(config as CliOptions)
+    genHtml2InlineCSS(config as CliOptions)
+  })
+
+cli
+  .command('css', 'extract css resources')
+  .option('-k, --keepFolderStructure', 'keep original folder structure')
+  .allowUnknownOptions()
+  .action(async (flags: Partial<CliOptions>) => {
+    const config = await getConfig(flags)
+    console.log(11111111)
+    genHtmlExtractCss(config as CliOptions)
   })
 
 
 cli.help()
 
 cli.parse()
-const parsed = cli.parse()
-
-console.log(JSON.stringify(parsed, null, 2))
