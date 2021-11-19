@@ -24,8 +24,6 @@ const handleVersionTag = async () => {
 async function addTagByPackage() {
   try {
     await commitAllFiles();
-
-    console.log("packageJson: ", packageJson);
     // 更新 package.json version
     const branch = "getLocalBranch()";
     const config = await generateNewTag(branch, packageJson.version);
@@ -56,7 +54,7 @@ async function createTag(tag) {
 
   log(chalk`{green 🏷  创建标签 ${tag}}`);
   await git.addTag(tag);
-  // await git.push()
+  await git.push();
   log(chalk`{green 🏷  push标签 ${tag}}成功`);
 }
 
