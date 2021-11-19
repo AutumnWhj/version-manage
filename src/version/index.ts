@@ -16,18 +16,73 @@ import {
 const log = console.log;
 const packageJsonPath = getPackageJsonPath();
 const packageJson: any = getPackage();
-const handleVersionTag = async () => {
-  log(chalk`{green 🏷  Tag基线: 根据package.json文件的version生成并更新}`);
-  await addTagByPackage();
+
+const inquirerInputTag = async () => {
+  const branch = await getLocalBranch();
+  const { version: packageVersion } = packageJson || {};
+  const { inputTag } = await inquirer.prompt([
+    {
+      name: "inputTag",
+      message: `请输入tag:`,
+      type: "input",
+      default: `${branch}-${packageVersion}`,
+    },
+  ]);
+  return inputTag;
 };
 
-async function addTagByPackage() {
+const handleVersionTag = async (config = {}) => {
+  log(chalk`{green 🏷  Tag基线: 根据package.json文件的version生成并更新}`);
+  console.log(".branchLocal(): ", await git.branchLocal());
+  inquirer
+    .prompt([
+      {
+        name: "baseline",
+        message: `选择Tag基线:`,
+        type: "list",
+        default: 1,
+        choices: [
+          {
+            name: "根据package.json文件的version生成并更新文件",
+            value: "package",
+          },
+          { name: "自己输入", value: "input" },
+        ],
+      },
+    ])
+    .then(async ({ baseline }) => {
+      try {
+        if (baseline === "package") {
+          // await addTagByPackage(config);
+        } else {
+          const inputTag = await inquirerInputTag();
+          await addTagByPackage({
+            ...config,
+            inputTag,
+          });
+        }
+        git.push();
+      } catch (err) {}
+    });
+  // await addTagByPackage(config);
+};
+const getLocalBranch = async () => {
+  const { current } = await git.branchLocal();
+  return current;
+};
+
+async function addTagByPackage(config) {
   try {
     await commitAllFiles();
     // 更新 package.json version
-    const branch = "getLocalBranch()";
-    const config = await generateNewTag(branch, packageJson.version);
-    const { version, tag } = config || {};
+    const branch = await getLocalBranch();
+    const { version: packageVersion } = packageJson || {};
+    const tagConfig = await generateNewTag({
+      env: branch,
+      version: packageVersion,
+      config,
+    });
+    const { version, tag } = tagConfig || {};
     packageJson["version"] = version;
     // 更新package对应环境的version
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, "  "));
@@ -71,20 +126,13 @@ async function commitAllFiles() {
         {
           name: "commit",
           message: ` 🚨 检测到有未提交文件，是否自动提交？`,
-          type: "list",
-          default: 1,
-          choices: [
-            {
-              name: "是",
-              value: "yes",
-            },
-            { name: "否", value: "no" },
-          ],
+          type: "confirm",
+          default: false,
         },
       ])
-      .then(async ({ commit, env }) => {
+      .then(async ({ commit }) => {
         try {
-          if (commit === "yes") {
+          if (commit) {
             log(chalk`{gray 🚀  正在自动提交文件}`);
             await git.add("./*");
             await git.commit("🚀");
@@ -112,22 +160,30 @@ const getReleaseEnv = (env) => {
  * @param {*} env master|pre|dev|all
  * @param {*} version
  */
-const generateNewTag = async (env = "master", version = "0.0.0") => {
+const generateNewTag = async ({
+  env = "master",
+  version = "0.0.0",
+  config,
+}) => {
+  const { inputTag } = config || {};
+
   const date = formatTime(new Date(), "{yy}-{mm}-{dd}");
   const minor = semver.minor(version);
   const patch = semver.patch(version);
 
-  const config = { env, version, tag: `${env}-v${version}-${date}` };
+  let resultVersion = "";
   if (patch >= 99) {
-    config.version = semver.inc(version, "minor");
+    resultVersion = semver.inc(version, "minor");
   } else if (minor >= 99) {
-    config.version = semver.inc(version, "major");
+    resultVersion = semver.inc(version, "major");
   } else {
-    config.version = semver.inc(version, "patch");
+    resultVersion = semver.inc(version, "patch");
   }
   const currentEnv = getReleaseEnv(env);
-  config.tag = `${currentEnv}-v${config.version}-${date}`;
-  return config;
+  const resultTag = inputTag
+    ? inputTag
+    : `${currentEnv}-v${resultVersion}-${date}`;
+  return { env, version, tag: resultTag };
 };
 
 export default async () => {
