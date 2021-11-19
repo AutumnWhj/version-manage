@@ -1,8 +1,9 @@
-const fs = require("fs");
+import fs from "fs";
+import chalk from "chalk";
 
 const inquirer = require("inquirer");
-const chalk = require("chalk");
 const semver = require("semver");
+
 const git = require("simple-git/promise")(process.cwd());
 
 import {
@@ -109,7 +110,7 @@ async function addTagByPackage(env) {
 
     // #region commit package.json 文件的修改
     const version = versions[0].version;
-    const date = formatTime(new Date(), "{yy}{mm}{dd}");
+    const date = formatTime(new Date(), "{yy}-{mm}-{dd}");
     const newTagsStr = versions.map((version) => version.tag).join(" / ");
     log(chalk`{gray ➕  暂存package.json文件变更}`);
     await git.add("./package.json");
@@ -162,10 +163,9 @@ async function commitAllFiles() {
  */
 function generateNewTag(env = "pre", version = "0.0.0") {
   return new Promise((resolve, reject) => {
-    // const major = semver.major(version)
     const minor = semver.minor(version);
     const patch = semver.patch(version);
-    const date = formatTime(new Date(), "{yy}{mm}{dd}");
+    const date = formatTime(new Date(), "{yy}-{mm}-{dd}");
     const config = { env, version, tag: `${env}-v${version}-${date}` };
     if (patch >= 99) {
       config.version = semver.inc(version, "minor");
