@@ -110,7 +110,7 @@ async function createTag(tag) {
   log(chalk`{green 🏷  创建标签 ${tag}}`);
   await git.addTag(tag);
   await git.push();
-  log(chalk`{green 🏷  push标签 ${tag}}成功`);
+  log(chalk`{green 🏷  push标签 ${tag}成功}`);
 }
 
 /**
@@ -169,8 +169,9 @@ const generateNewTag = async ({
 
   const date = formatTime(new Date(), "{yy}-{mm}-{dd}");
   const minor = semver.minor(version);
+  console.log("minor: ", minor);
   const patch = semver.patch(version);
-
+  console.log("patch: ", patch);
   let resultVersion = "";
   if (patch >= 99) {
     resultVersion = semver.inc(version, "minor");
@@ -183,7 +184,7 @@ const generateNewTag = async ({
   const resultTag = inputTag
     ? inputTag
     : `${currentEnv}-v${resultVersion}-${date}`;
-  return { env, version, tag: resultTag };
+  return { env, version: resultVersion, tag: resultTag };
 };
 
 export default async () => {
