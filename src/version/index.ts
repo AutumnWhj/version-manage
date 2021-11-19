@@ -23,7 +23,7 @@ const inquirerInputTag = async () => {
   const { inputTag } = await inquirer.prompt([
     {
       name: "inputTag",
-      message: `请输入tag:`,
+      message: `请输入Tag:`,
       type: "input",
       default: `${branch}-${packageVersion}`,
     },
@@ -46,7 +46,7 @@ const handleVersionTag = async (config = {}) => {
             name: "根据package.json文件的version生成并更新文件",
             value: "package",
           },
-          { name: "自己输入", value: "input" },
+          { name: "自定义输入Tag", value: "input" },
         ],
       },
     ])
