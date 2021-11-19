@@ -31,41 +31,6 @@ const inquirerInputTag = async () => {
   return inputTag;
 };
 
-const handleVersionTag = async (config = {}) => {
-  log(chalk`{green 🏷  Tag基线: 根据package.json文件的version生成并更新}`);
-  console.log(".branchLocal(): ", await git.branchLocal());
-  inquirer
-    .prompt([
-      {
-        name: "baseline",
-        message: `选择Tag基线:`,
-        type: "list",
-        default: 1,
-        choices: [
-          {
-            name: "根据package.json文件的version生成并更新文件",
-            value: "package",
-          },
-          { name: "自定义输入Tag", value: "input" },
-        ],
-      },
-    ])
-    .then(async ({ baseline }) => {
-      try {
-        if (baseline === "package") {
-          // await addTagByPackage(config);
-        } else {
-          const inputTag = await inquirerInputTag();
-          await addTagByPackage({
-            ...config,
-            inputTag,
-          });
-        }
-        git.push();
-      } catch (err) {}
-    });
-  // await addTagByPackage(config);
-};
 const getLocalBranch = async () => {
   const { current } = await git.branchLocal();
   return current;
@@ -135,7 +100,7 @@ async function commitAllFiles() {
           if (commit) {
             log(chalk`{gray 🚀  正在自动提交文件}`);
             await git.add("./*");
-            await git.commit("🚀");
+            await git.commit("🚀 打Tag自动push未提交的文件");
           } else {
             process.exit(1);
           }
@@ -146,7 +111,7 @@ async function commitAllFiles() {
 
 const getReleaseEnv = (env) => {
   if (env.includes("release")) {
-    const lastCharIndex = env.lastIndexOf("/");
+    const lastCharIndex = env.lastIndexOf("-dev");
     return env.slice(0, lastCharIndex);
   }
   // sass master做特殊处理，映射到release/sass分支
@@ -169,10 +134,9 @@ const generateNewTag = async ({
 
   const date = formatTime(new Date(), "{yy}-{mm}-{dd}");
   const minor = semver.minor(version);
-  console.log("minor: ", minor);
   const patch = semver.patch(version);
-  console.log("patch: ", patch);
   let resultVersion = "";
+  // 默认99个patch版本后，开始打minor版本
   if (patch >= 99) {
     resultVersion = semver.inc(version, "minor");
   } else if (minor >= 99) {
@@ -187,12 +151,45 @@ const generateNewTag = async ({
   return { env, version: resultVersion, tag: resultTag };
 };
 
-export default async () => {
-  console.log("handleVersionTag");
+const handleVersionTag = async (config = {}) => {
+  log(chalk`{green 🏷  Tag基线: 根据package.json文件的version生成并更新}`);
+  inquirer
+    .prompt([
+      {
+        name: "baseline",
+        message: `请选择Tag基线:`,
+        type: "list",
+        default: 1,
+        choices: [
+          {
+            name: "根据package.json文件的version生成并更新文件",
+            value: "package",
+          },
+          { name: "自定义输入Tag", value: "input" },
+        ],
+      },
+    ])
+    .then(async ({ baseline }) => {
+      try {
+        if (baseline === "package") {
+          await addTagByPackage(config);
+        } else {
+          const inputTag = await inquirerInputTag();
+          await addTagByPackage({
+            ...config,
+            inputTag,
+          });
+        }
+        git.push();
+      } catch (err) {}
+    });
+  // await addTagByPackage(config);
+};
+export default async (config = {}) => {
   await Promise.all([
     checkPackage("inquirer"),
     checkPackage("chalk"),
     checkPackage("simple-git"),
     checkPackage("semver"),
-  ]).then(() => handleVersionTag());
+  ]).then(() => handleVersionTag(config));
 };

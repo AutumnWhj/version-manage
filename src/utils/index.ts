@@ -13,6 +13,8 @@ export const checkPackage = (pack: string) => {
     fs.exists(
       path.resolve(`${process.cwd()}/node_modules/${pack}/`),
       (exists) => {
+        console.log("exists: ", exists);
+
         if (!exists) {
           log("📦  正在安装依赖包: ", pack, "...");
           log("");
