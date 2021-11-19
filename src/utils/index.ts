@@ -1,5 +1,7 @@
 import fs from "fs";
 import path from "path";
+import chalk from "chalk";
+
 const _exec = require("child_process").exec;
 const log = console.log;
 /**
@@ -18,7 +20,7 @@ export const checkPackage = (pack: string) => {
         if (!exists) {
           log("📦  正在安装依赖包: ", pack, "...");
           log("");
-          let cwd = `npm install --save-dev ${pack}`;
+          let cwd = `yarn add --save-dev ${pack}`;
           const child = _exec(cwd, { silent: true });
           child.stdout.on("data", (buffer) => process.stdout.write(buffer));
           child.on("close", (code) => {
@@ -46,11 +48,21 @@ export function getGitVersion() {
   return `"${develop}: ${gitVersion}"`; // 例如dev环境: "develop: 6ceb0ab5059d01fd444cf4e78467cc2dd1184a66"
 }
 // 获取package文件路径
-export const getPackageJsonPath = () =>
-  path.resolve(process.cwd(), "package.json");
+export const getPackageJsonPath = () => {
+  return path.resolve(process.cwd(), "package.json");
+};
 // 获取当前的package文件配置
 export const getPackage = () => {
   return require(getPackageJsonPath());
+};
+export const checkFileExists = (files) => {
+  files.forEach((name) => {
+    const filePath = path.resolve(process.cwd(), name);
+    if (!fs.existsSync(name)) {
+      log(chalk`{red  🚨 ${filePath}文件不存在}`);
+      process.exit(1);
+    }
+  });
 };
 /**
  * 格式化时间

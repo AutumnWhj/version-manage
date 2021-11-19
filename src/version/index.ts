@@ -8,13 +8,14 @@ import gitP, { SimpleGit } from "simple-git/promise";
 const git: SimpleGit = gitP(process.cwd());
 
 import {
-  checkPackage,
+  checkFileExists,
   formatTime,
   getPackageJsonPath,
   getPackage,
 } from "../utils";
 const log = console.log;
 const packageJsonPath = getPackageJsonPath();
+console.log("packageJsonPath: ", packageJsonPath);
 const packageJson: any = getPackage();
 
 const inquirerInputTag = async () => {
@@ -159,7 +160,7 @@ const handleVersionTag = async (config = {}) => {
         name: "baseline",
         message: `请选择Tag基线:`,
         type: "list",
-        default: 1,
+        default: 0,
         choices: [
           {
             name: "根据package.json文件的version生成并更新文件",
@@ -186,10 +187,6 @@ const handleVersionTag = async (config = {}) => {
   // await addTagByPackage(config);
 };
 export default async (config = {}) => {
-  await Promise.all([
-    checkPackage("inquirer"),
-    checkPackage("chalk"),
-    checkPackage("simple-git"),
-    checkPackage("semver"),
-  ]).then(() => handleVersionTag(config));
+  checkFileExists(["package.json", ".git"]);
+  await handleVersionTag(config);
 };
