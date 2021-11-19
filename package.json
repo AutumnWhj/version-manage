@@ -1,3 +1,28 @@
 {
-  "version": "0.0.1"
+  "name": "cli-version",
+  "version": "1.0.1",
+  "bin": {
+    "version": "bin/index.js"
+  },
+  "main": "lib/bundle.cjs.js",
+  "scripts": {
+    "build": "rollup -c -w"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^18.0.0",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-typescript": "^8.2.1",
+    "chalk": "^4.1.2",
+    "inquirer": "^8.2.0",
+    "rollup": "^2.45.1",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-polyfill-node": "^0.7.0",
+    "semver": "^7.3.5",
+    "simple-git": "^2.47.0",
+    "typescript": "^4.2.4"
+  },
+  "dependencies": {
+    "cac": "^6.7.11",
+    "tslib": "^2.3.1"
+  }
 }
