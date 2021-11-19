@@ -1,25 +1,95 @@
-export const getGlobPatternMatchPath = (
-  globPatternList: string[],
-  targetPath: string
-): string => {
-  let index = Infinity
-  let res = ''
-  for (let i = 0; i < globPatternList.length; i++) {
-    let ep: string = explicitPrefix(globPatternList[i])
-    if (targetPath.startsWith(ep) && ep.length < index) {
-      index = ep.length
-      res = ep
-    }
-  }
-  res = targetPath.slice(res.length)
-  return res[0] === '/' ? res.slice(1) : res
+const fs = require("fs");
+const path = require("path");
+const _exec = require("child_process").exec;
+const log = console.log;
+/**
+ * 检查并自动安装依赖包
+ * https://sourcegraph.com/github.com/vuejs/vue-cli/-/blob/packages/@vue/cli/lib/util/installDeps.js
+ * @param {*} package 依赖包名
+ * @returns
+ */
+export const checkPackage = (pack: string) => {
+  return new Promise((resolve, reject) => {
+    fs.exists(
+      path.resolve(`${process.cwd()}/node_modules/${pack}/`),
+      (exists) => {
+        if (!exists) {
+          log("📦  正在安装依赖包: ", pack, "...");
+          log("");
+          let cwd = `npm install --save-dev ${pack}`;
+          const child = _exec(cwd, { silent: true });
+          child.stdout.on("data", (buffer) => process.stdout.write(buffer));
+          child.on("close", (code) => {
+            if (code !== 0) {
+              reject(`command failed: ${cwd}`);
+              return;
+            }
+            resolve(true);
+          });
+        } else {
+          resolve(true);
+        }
+      }
+    );
+  });
+};
+/**
+ * 获取git版本
+ */
+export function getGitVersion() {
+  const gitHEAD = fs.readFileSync(".git/HEAD", "utf-8").trim(); // ref: refs/heads/develop
+  const ref = gitHEAD.split(": ")[1]; // refs/heads/develop
+  const develop = gitHEAD.split("/")[2]; // 环境：develop
+  const gitVersion = fs.readFileSync(`.git/${ref}`, "utf-8").trim(); // git版本号，例如：6ceb0ab5059d01fd444cf4e78467cc2dd1184a66
+  return `"${develop}: ${gitVersion}"`; // 例如dev环境: "develop: 6ceb0ab5059d01fd444cf4e78467cc2dd1184a66"
 }
-
-export const explicitPrefix = (pattern: string): string => {
-  let patternList = pattern.split('/')
-  let resi = 0
-  while (patternList[resi] && patternList[resi] !== '**') {
-    resi++
+// 获取package文件路径
+export const getPackageJsonPath = () =>
+  path.resolve(process.cwd(), "package.json");
+// 获取当前的package文件配置
+export const getPackage = () => {
+  require(getPackageJsonPath());
+};
+/**
+ * 格式化时间
+ *
+ * @param  {time} 时间
+ * @param  {cFormat} 格式
+ * @return {String} 字符串
+ *
+ * @example formatTime('2018-1-29', '{y}/{m}/{d} {h}:{i}:{s}') // -> 2018/01/29 00:00:00
+ */
+export function formatTime(time, cFormat) {
+  if (arguments.length === 0) return null;
+  if (`${time}`.length === 10) {
+    time = +time * 1000;
   }
-  return patternList.slice(0, resi).join('/')
+
+  const format = cFormat || "{y}-{m}-{d} {h}:{i}:{s}";
+  let date;
+  if (typeof time === "object") {
+    date = time;
+  } else {
+    date = new Date(time);
+  }
+
+  const formatObj = {
+    y: date.getFullYear(),
+    m: date.getMonth() + 1,
+    d: date.getDate(),
+    h: date.getHours(),
+    i: date.getMinutes(),
+    s: date.getSeconds(),
+    a: date.getDay(),
+  };
+  const time_str = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result, key) => {
+    let value = formatObj[key];
+    if (key === "a")
+      return ["一", "二", "三", "四", "五", "六", "日"][value - 1];
+    if (result.length > 0 && value < 10) {
+      value = `0${value}`;
+    }
+    return value || 0;
+  });
+  return time_str;
 }
