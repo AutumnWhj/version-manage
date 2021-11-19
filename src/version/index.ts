@@ -4,7 +4,6 @@ import chalk from "chalk";
 const inquirer = require("inquirer");
 const semver = require("semver");
 
-// const git = require("simple-git/promise")(process.cwd());
 import gitP, { SimpleGit } from "simple-git/promise";
 const git: SimpleGit = gitP(process.cwd());
 
@@ -16,7 +15,7 @@ import {
 } from "../utils";
 const log = console.log;
 const packageJsonPath = getPackageJsonPath();
-
+const packageJson: any = getPackage();
 const handleVersionTag = async () => {
   log(chalk`{green 🏷  Tag基线: 根据package.json文件的version生成并更新}`);
   await addTagByPackage();
@@ -25,8 +24,8 @@ const handleVersionTag = async () => {
 async function addTagByPackage() {
   try {
     await commitAllFiles();
-    const packageJson: any = await getPackage();
-    log("packageJson", packageJson);
+
+    console.log("packageJson: ", packageJson);
     // 更新 package.json version
     const branch = "getLocalBranch()";
     const config = await generateNewTag(branch, packageJson.version);

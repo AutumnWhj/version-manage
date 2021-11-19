@@ -48,7 +48,7 @@ export const getPackageJsonPath = () =>
   path.resolve(process.cwd(), "package.json");
 // 获取当前的package文件配置
 export const getPackage = () => {
-  import(getPackageJsonPath());
+  return require(getPackageJsonPath());
 };
 /**
  * 格式化时间
