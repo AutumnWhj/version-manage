@@ -4,39 +4,7 @@ import chalk from "chalk";
 
 const _exec = require("child_process").exec;
 const log = console.log;
-/**
- * 检查并自动安装依赖包
- * https://sourcegraph.com/github.com/vuejs/vue-cli/-/blob/packages/@vue/cli/lib/util/installDeps.js
- * @param {*} package 依赖包名
- * @returns
- */
-export const checkPackage = (pack: string) => {
-  return new Promise((resolve, reject) => {
-    fs.exists(
-      path.resolve(`${process.cwd()}/node_modules/${pack}/`),
-      (exists) => {
-        console.log("exists: ", exists);
 
-        if (!exists) {
-          log("📦  正在安装依赖包: ", pack, "...");
-          log("");
-          let cwd = `yarn add --save-dev ${pack}`;
-          const child = _exec(cwd, { silent: true });
-          child.stdout.on("data", (buffer) => process.stdout.write(buffer));
-          child.on("close", (code) => {
-            if (code !== 0) {
-              reject(`command failed: ${cwd}`);
-              return;
-            }
-            resolve(true);
-          });
-        } else {
-          resolve(true);
-        }
-      }
-    );
-  });
-};
 /**
  * 获取git版本
  */

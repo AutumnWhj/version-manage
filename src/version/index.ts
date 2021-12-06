@@ -15,7 +15,6 @@ import {
 } from "../utils";
 const log = console.log;
 const packageJsonPath = getPackageJsonPath();
-console.log("packageJsonPath: ", packageJsonPath);
 const packageJson: any = getPackage();
 
 const inquirerInputTag = async () => {
