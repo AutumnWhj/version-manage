@@ -1,6 +1,5 @@
 import fs from "fs";
 import chalk from "chalk";
-
 const inquirer = require("inquirer");
 const semver = require("semver");
 
@@ -10,11 +9,11 @@ const git: SimpleGit = gitP(process.cwd());
 import {
   checkFileExists,
   formatTime,
-  getPackageJsonPath,
+  getFilePath,
   getPackage,
 } from "../utils";
 const log = console.log;
-const packageJsonPath = getPackageJsonPath();
+const packageJsonPath = getFilePath('package.json');
 const packageJson: any = getPackage();
 
 const inquirerInputTag = async () => {
@@ -74,7 +73,7 @@ async function createTag(tag) {
 
   log(chalk`{green 🏷  创建标签 ${tag}}`);
   await git.addTag(tag);
-  await git.push();
+  await git.pushTags();
   log(chalk`{green 🏷  push标签 ${tag}成功}`);
 }
 
@@ -144,7 +143,7 @@ const generateNewTag = async ({
   } else {
     resultVersion = semver.inc(version, "patch");
   }
-  const currentEnv = getReleaseEnv(env);
+  const currentEnv = env;
   const resultTag = inputTag
     ? inputTag
     : `${currentEnv}-v${resultVersion}-${date}`;
@@ -185,7 +184,99 @@ const handleVersionTag = async (config = {}) => {
     });
   // await addTagByPackage(config);
 };
+
+// const getPath = path => {
+//   return path.resolve(__dirname, path)
+// }
+const writeFile =  ({ name, toPath, regexList }) => {
+  const path = getFilePath(name)
+  try {
+    let content = ''
+    if (!fs.existsSync(name)) {
+      // log(chalk`{red  🚨 Dockerfile.template 文件不存在, 将自动新建}`);
+      // process.exit(1);
+      //  const templatePath = getFilePath('Dockerfile.template')
+      //  console.log('templatePath: ', templatePath);
+      content =  `
+FROM stilleshan/coscmd AS build
+ARG VERSION=<timeTemp>
+ARG OSS_SECRET_ID
+ARG OSS_SECRET_KEY
+ARG OSS_BUCKET
+ARG OSS_REGION
+
+RUN coscmd config -a \${OSS_SECRET_ID} -s \${OSS_SECRET_KEY} -b \${OSS_BUCKET} -r \${OSS_REGION} && coscmd download -rf <cosPath> /dist
+
+FROM nginx:1.16.1
+
+MAINTAINER hao.liu@belloai.com
+
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /dist /src/dist
+
+COPY msg.sh /src/msg.sh
+COPY package.json /src/package.json
+
+EXPOSE 80
+
+ENV TZ Asia/Shanghai
+
+# RUN chmod a+x /src/msg.sh
+# RUN apt-get update && apt-get install -y curl
+# ENTRYPOINT [ "/src/msg.sh" ]
+       `
+      //  console.log('data: ', data);
+      //  fs.writeFileSync(templatePath, data)
+    } else {
+      content = fs.readFileSync(path, 'utf8')
+    }
+    const resultContent = regexList.reduce((acc, item) => {
+      const {regexContent, replaceContent} = item || {}
+      acc = acc.replace(regexContent, replaceContent)
+      return acc
+    },content)
+    fs.writeFileSync(toPath, resultContent)
+    log(chalk`{green ✔️  ${toPath}文件修改成功}`)
+  } catch (error) {
+    console.log('error: ', error);
+    
+  }
+}
+//  btp_console/release/dingding/default /dist
+const  getCosPath = async() => {
+  const branch = await getLocalBranch();
+  const remote = await git.listRemote(['--get-url'])
+  const repo = remote.replace(/(.*\/)*([^.]+).*/ig,"$2").trim()
+  return `${repo}/${branch}/default`
+}
+
+// 修改Dockerfile文件
+const createNewFile = async () => {
+  try {
+    const cosPath = await getCosPath()
+    writeFile({
+      name: 'Dockerfile.template',
+      toPath: `${process.cwd()}/Dockerfile`,
+      regexList:[
+        {
+          regexContent: '<cosPath>',
+          replaceContent: cosPath
+        },
+        {
+          regexContent: '<timeTemp>',
+          replaceContent: `${new Date().getTime()}`
+        },
+      ]
+    })
+  } catch (error) {
+    log(chalk`{red  🚨  修改Dockerfile文失败，请重试}`)
+  } 
+}
+
+
 export default async (config = {}) => {
+  await createNewFile()
   checkFileExists(["package.json", ".git"]);
   await handleVersionTag(config);
 };

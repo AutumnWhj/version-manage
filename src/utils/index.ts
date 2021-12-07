@@ -16,12 +16,12 @@ export function getGitVersion() {
   return `"${develop}: ${gitVersion}"`; // 例如dev环境: "develop: 6ceb0ab5059d01fd444cf4e78467cc2dd1184a66"
 }
 // 获取package文件路径
-export const getPackageJsonPath = () => {
-  return path.resolve(process.cwd(), "package.json");
+export const getFilePath = (name) => {
+  return path.resolve(process.cwd(), name);
 };
 // 获取当前的package文件配置
 export const getPackage = () => {
-  return require(getPackageJsonPath());
+  return require(getFilePath('package.json'));
 };
 export const checkFileExists = (files) => {
   files.forEach((name) => {
