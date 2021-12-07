@@ -24,5 +24,11 @@
     "inquirer": "^8.2.0",
     "semver": "^7.3.5",
     "simple-git": "^2.47.0"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "access": "public"
   }
 }
