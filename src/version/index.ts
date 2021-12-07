@@ -99,7 +99,7 @@ async function commitAllFiles() {
           if (commit) {
             log(chalk`{gray 🚀  正在自动提交文件}`);
             await git.add("./*");
-            await git.commit("🚀 打Tag自动push未提交的文件");
+            await git.commit("chore: add Tag and push auto");
           } else {
             process.exit(1);
           }
@@ -275,10 +275,10 @@ const createDockerFile = async () => {
 // 修改Dockerfile文件
 const createNewFile = async () => {
   try {
-    const frontendRepo = ['btp_console', 'btp_console']
     const repo = await getLocalRepo()
-    if(frontendRepo.includes(repo)) {
-      await createDockerFile
+    console.log('repo: ', repo, repo.includes('btp_'));
+    if(repo.includes('btp_')) {
+      await createDockerFile()
     }
   } catch (error) {
     log(chalk`{red  🚨  修改Dockerfile文失败，请重试}`)
@@ -287,7 +287,6 @@ const createNewFile = async () => {
 
 
 export default async (config = {}) => {
-  
   await createNewFile()
   checkFileExists(["package.json", ".git"]);
   await handleVersionTag(config);
