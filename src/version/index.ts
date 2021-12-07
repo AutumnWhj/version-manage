@@ -50,7 +50,7 @@ async function addTagByPackage(config) {
     packageJson["version"] = version;
     // 更新package对应环境的version
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, "  "));
-    const date = formatTime(new Date(), "{yy}-{mm}-{dd}");
+    const date = formatTime(new Date(), "{yy}/{mm}/{dd}");
     log(chalk`{gray ➕  暂存package.json文件变更}`);
     await git.add("./package.json");
     log(chalk`{gray ✔️  提交package.json文件变更}`);
@@ -131,7 +131,7 @@ const generateNewTag = async ({
 }) => {
   const { inputTag } = config || {};
 
-  const date = formatTime(new Date(), "{yy}-{mm}-{dd}");
+  const date = formatTime(new Date(), "{yy}{mm}{dd}");
   const minor = semver.minor(version);
   const patch = semver.patch(version);
   let resultVersion = "";
