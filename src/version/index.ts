@@ -91,7 +91,7 @@ async function commitAllFiles() {
           name: "commit",
           message: ` 🚨 检测到有未提交文件，是否自动提交？`,
           type: "confirm",
-          default: false,
+          default: true,
         },
       ])
       .then(async ({ commit }) => {
