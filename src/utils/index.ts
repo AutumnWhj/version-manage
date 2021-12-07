@@ -27,7 +27,7 @@ export const checkFileExists = (files) => {
   files.forEach((name) => {
     const filePath = path.resolve(process.cwd(), name);
     if (!fs.existsSync(name)) {
-      log(chalk`{red  🚨 ${filePath}文件不存在}`);
+      log(chalk`{red  🚨 ${filePath}文件不存在， 请重试}`);
       process.exit(1);
     }
   });

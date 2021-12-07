@@ -276,11 +276,12 @@ const createDockerFile = async () => {
 const createNewFile = async () => {
   try {
     const branch = await getLocalBranch();
-    if(branch.startsWith('release/')) {
+    if(branch && branch.startsWith('release/')) {
       await createDockerFile()
     }
   } catch (error) {
-    log(chalk`{red  🚨  修改Dockerfile文失败，请重试}`)
+    console.log('error: ', error);
+    log(chalk`{red  🚨  创建文件失败，请重试}`)
   } 
 }
 
