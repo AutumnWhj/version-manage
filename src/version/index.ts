@@ -244,31 +244,42 @@ ENV TZ Asia/Shanghai
   }
 }
 //  btp_console/release/dingding/default /dist
-const  getCosPath = async() => {
-  const branch = await getLocalBranch();
+const  getLocalRepo = async () => {
   const remote = await git.listRemote(['--get-url'])
-  const repo = remote.replace(/(.*\/)*([^.]+).*/ig,"$2").trim()
+  return remote.replace(/(.*\/)*([^.]+).*/ig,"$2").trim()
+}
+const  getCosPath = async () => {
+  const branch = await getLocalBranch();
+  const repo = getLocalRepo()
   return `${repo}/${branch}/default`
+}
+
+const createDockerFile = async () => {
+  const cosPath = await getCosPath()
+  writeFile({
+    name: 'Dockerfile.template',
+    toPath: `${process.cwd()}/Dockerfile`,
+    regexList:[
+      {
+        regexContent: '<cosPath>',
+        replaceContent: cosPath
+      },
+      {
+        regexContent: '<timeTemp>',
+        replaceContent: `${new Date().getTime()}`
+      },
+    ]
+  })
 }
 
 // 修改Dockerfile文件
 const createNewFile = async () => {
   try {
-    const cosPath = await getCosPath()
-    writeFile({
-      name: 'Dockerfile.template',
-      toPath: `${process.cwd()}/Dockerfile`,
-      regexList:[
-        {
-          regexContent: '<cosPath>',
-          replaceContent: cosPath
-        },
-        {
-          regexContent: '<timeTemp>',
-          replaceContent: `${new Date().getTime()}`
-        },
-      ]
-    })
+    const frontendRepo = ['btp_console', 'btp_console']
+    const repo = await getLocalRepo()
+    if(frontendRepo.includes(repo)) {
+      await createDockerFile
+    }
   } catch (error) {
     log(chalk`{red  🚨  修改Dockerfile文失败，请重试}`)
   } 
@@ -276,6 +287,7 @@ const createNewFile = async () => {
 
 
 export default async (config = {}) => {
+  
   await createNewFile()
   checkFileExists(["package.json", ".git"]);
   await handleVersionTag(config);
