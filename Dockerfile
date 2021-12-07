@@ -1,12 +1,12 @@
 
 FROM stilleshan/coscmd AS build
-ARG VERSION=1638861680589
+ARG VERSION=1638862328666
 ARG OSS_SECRET_ID
 ARG OSS_SECRET_KEY
 ARG OSS_BUCKET
 ARG OSS_REGION
 
-RUN coscmd config -a ${OSS_SECRET_ID} -s ${OSS_SECRET_KEY} -b ${OSS_BUCKET} -r ${OSS_REGION} && coscmd download -rf html2email/master/default /dist
+RUN coscmd config -a ${OSS_SECRET_ID} -s ${OSS_SECRET_KEY} -b ${OSS_BUCKET} -r ${OSS_REGION} && coscmd download -rf version-manage/master/default /dist
 
 FROM nginx:1.16.1
 

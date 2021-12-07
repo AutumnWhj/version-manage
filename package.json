@@ -2,7 +2,7 @@
   "name": "cli-version",
   "version": "1.0.8",
   "bin": {
-    "version": "bin/index.js"
+    "belloVersion": "bin/index.js"
   },
   "main": "lib/bundle.cjs.js",
   "scripts": {
