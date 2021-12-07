@@ -275,9 +275,8 @@ const createDockerFile = async () => {
 // 修改Dockerfile文件
 const createNewFile = async () => {
   try {
-    const repo = await getLocalRepo()
-    console.log('repo: ', repo, repo.includes('btp_'));
-    if(repo.includes('btp_')) {
+    const branch = await getLocalBranch();
+    if(branch.startsWith('release/')) {
       await createDockerFile()
     }
   } catch (error) {
